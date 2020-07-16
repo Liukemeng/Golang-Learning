@@ -54,7 +54,7 @@
 
    - **string拼接**：
 
-     - 用 + 连接两个string类型，string(97)函数只能是字符和他的ASCII或Unicode值的转换，如果将97转为字符串“97”而不是‘a’，需要用strconv包中的函数；
+     - 用 + 连接两个string类型，string(97)函数只能是字符和他的ASCII或Unicode值的转换，如果将97转为字符串“97”而不是"a"，需要用strconv包中的函数；
      - 用strings包中的Join函数进行连接；strings.Join(elems []string, sep string) string
 
    - **string长度**：len取的是字节数量，不是字符数量。
