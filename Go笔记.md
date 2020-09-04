@@ -1,4 +1,4 @@
-###                                                                                                    Go算法笔记
+Go算法笔记
 
 #### 知识点：
 
@@ -25,7 +25,7 @@
 
    - 用单引号  ‘ ’ 包围的单个字符；
    - go中没有字符类型，所有的字符都用整数保存，ASCII字符最大值是127，常见字符（英文字母等）用byte就可以，中文的话，采用Unicode编码，一个字符占3个字节，所以需要用rune或者int;
-   - 对字符直接输出就是实际的ASCII码或者Unicode码，可通过string('a')转为字符。
+   - 对字符直接输出就是实际的ASCII码或者Unicode码，可通过string(a)转为“字符”，但是数据类型还是string。
 
 4. **folat和complex**:
 
@@ -39,22 +39,44 @@
 
    - 用双引号 "" 反引号``包围，双引号是弱引用，可以用反斜线 \ 进行转义；反引号是强引用，就是字面意思，无法转义；
 
-   - **string底层是byte数组**，其实string占用两个机器字长，一个指针一个长度，但是这个指针不可见，所以string底层是byte数组的值类型，而不是指针类型。
+   - **string底层是byte数组**，其实string占用两个机器字长，一个指针，一个长度，但是这个指针不可见，所以string底层是byte数组的值类型，而不是指针类型。string和byte[]切片可以相互转换
 
-     - 可以将string使用append()或者copy()添加或者复制给一个byte slice，也可以使用slice的切片功能截取string中的片段；
+     - 可以将string使用append()或者copy()添加或者复制给一个[] byte slice，也可以使用slice的切片功能截取string中的片段；
 
-       ![image-20200702124405365](C:\Users\lkm\AppData\Roaming\Typora\typora-user-images\image-20200702124405365.png)
+       ```go
+       
+       func main(){
+           var a = "Hello Gaoxiaofang"
+           println(a[2:3])     //输出:1
+       
+           s1 :=make ([]byte, 30)
+         	copy (sl,a)        //将字符电保存到slice中   
+           println(string(s1)) //输出"Hello Gaoxiaofang"
+         	
+           str:=string(s1)//可以将byte[]转为string
+         	println(str)   ////输出"Hello Gaoxiaofang"
+         
+       }
+       ```
 
    - **string的截取**（索引按照字节算，不是字符，从0开始）：
 
      - “string”[x]: 返回第x个字节对应字符的二进制**数值**；字母ASCII码。其他的Unicode码；
+
      - "string[x:y]":返回第x个字节到y字节中间的**字符串**；左闭右开
 
-     ![](C:\Users\lkm\AppData\Roaming\Typora\typora-user-images\image-20200702104908383.png)
-
+       ```go
+       func main(){
+           println ("abcde"[1])    	//(1).输出"98"
+           print1n ("我是中国人"[1])    //(2).输出"136"
+           printIn ("abcde" [0:2])    //(3).输出"ab"
+           printin("我是中国人"[0:31)   //(4)．输出“我
+           print1n ("abcde" [3:4])    //(5).输出"d"         
+       ```
+     
    - **string拼接**：
 
-     - 用 + 连接两个string类型，string(97)函数只能是字符和他的ASCII或Unicode值的转换，如果将97转为字符串“97”而不是"a"，需要用strconv包中的函数；
+     - 用 + 连接两个string类型，string(97)函数只能是字符和他的ASCII或Unicode值的转换，如果将97转为字符串“97”而不是‘a’，需要用strconv包中的函数；
      - 用strings包中的Join函数进行连接；strings.Join(elems []string, sep string) string
 
    - **string长度**：len取的是字节数量，不是字符数量。
@@ -92,9 +114,15 @@
 
      - 可以使用 < <= > >= == !=进行比较，字母是以A-Z a-zASCII码进行排列比较。
 
-   - **string的修改**：字符串是不可变的对象，不能直接修改字符串，只能将字符串拷贝到byte slice中，之后按照索引修改相应位置的字符，然后再将byte slice转为string。
+   - **string的修改**：字符串是不可变的对象，不能直接修改字符串，只能将字符串拷贝到[]byte slice中，之后按照索引修改相应位置的字符，然后再将byte slice转为string。
 
-     ![image-20200702125848940](C:\Users\lkm\AppData\Roaming\Typora\typora-user-images\image-20200702125848940.png)
+     ```go
+     s:= "gaoxiaofang" 
+     bs := []byte(s)
+     bs [0] ='ml'   //必须使用单引号
+     s=string(bs)
+     println(s)
+     ```
 
    - 
 
@@ -103,15 +131,30 @@
    - 数据类型：reflect.TypeOf( )
    - 数据所含空间大小（字节）：unsafe.Sizeof( )
 
-7. 
+7. **Array**：数组
+
+   ```go
+   //声明
+   var arr_name [5]int  //类型是[5]int ,默认赋值为“零”.
+   //声明并初始化
+   arr_name := [5]int{3,5,22,12,23}
+   // 声明长度为3的数组
+   arr_name1 := [...]int{2,3,4} //...表示根据值来推断数组长度。
+   ```
+
+   
+
+   - 
+
+8. 
 
 #### 二、strconv包；
 
 1. **简单的转换**：
 
    - go不会进行隐式转换，只能手动转换；
-   - 底层结构相同的两个类型直接可以直接通过类型进行转换： valueOfTypeB=typeB(valueOfTypeA)；byte int,int float等
-   - 低精度想高精度转换安全，高精度向低精度转换不安全
+   - 底层结构相同的两个类型直接可以直接通过类型进行转换： valueOfTypeB=typeB(valueOfTypeA)；byte int,int float等, string 和[]byte
+   - 低精度向高精度转换安全，高精度向低精度转换不安全
 
 2. **string和简单数据类型之间的转换**：
 
@@ -155,8 +198,8 @@
 3. 循环结构：for；    //无while；
 
    - 配合range 可以遍历，array、slice、map、channel以及字符串；
-   - range遍历取出的值是从被遍历结构拷贝值，直接修改值无效，但可以通过索引来修改值。
-   - range遍历array、slice、channe索引都是直接从0,1,2这种递增的；遍历map索引就是key；遍历字符串取出的索引是按照字节的大小对每个元素进行索引，而不是字符；
+   - range遍历取出的值是从被遍历结构**拷贝**值，直接修改值无效，但可以通过索引来修改值。
+   - range遍历array、slice、channe索引都是直接从0,1,2这种递增的；遍历map索引就是key；遍历字符串取出的索引是按照**字节**的大小对每个元素进行索引，而不是字符；
 
 4. break：退出for或switch结构(以及select)；
 
@@ -192,7 +235,7 @@
      
      // 声明f1()，变长参数
      func f1(s...string){}
-     // 声明和f2()，是slice形式
+     // 声明f2()，是slice形式
      func f2(s []string){}
      ```
 
@@ -260,15 +303,15 @@
 
 6. go作用域是词法作用域，函数位置决定了他能看见的变量；
 
-7. 不允许重载（voerload）函数，也就是不能有重名函数；
+7. **不允许重载**（voerload）函数，也就是不能有重名函数；
 
 8. 函数中不允许嵌套函数，但是可以嵌套匿名函数；
 
-9. 函数不支持泛型，但可以通过接口，type switch,reflection的方式来进行解决；
+9. 函数**不支持泛型**，但可以通过接口，type switch,reflection的方式来进行解决；
 
 10. go函数是高阶函数，实现了一阶函数，所以：
 
-    - 函数是一个值，可以将函数赋值给变量，使得这个变量也称为函数；
+    - 函数是一个值，可以将函数赋值给变量，使得这个变量也成为函数；
     - 函数可以作为参数传递给另外一个函数；
     - 函数的返回值可以是个函数；
     - 回调函数、闭包等功能都是依赖这些特性；闭包是指在函数内定义的匿名函数可以使用该函数的参数。
@@ -285,13 +328,13 @@
     	- channel的channel buffer中的未读队列长度
     */
     func cap(v Type) int
-    //用于获取slice的容
+    //用于获取array、slice、channel的容
     func copy(dst, src []Type) int
     //用于拷贝slice
     func append(slice []Type, elems ...Type) []Type
     //用于追加slice
     -----------------------------------------------------------
-    func delete(m map[Type]Type1, key Type)
+    func delete(m map[Typek]Typev, key Type)
     //删除map中的元素
     -----------------------------------------------------------
     func close(c chan<- Type)
@@ -324,7 +367,7 @@
         ...CODE...
     }
     
-    // 声明匿名函数并直接执行
+    // 声明匿名函数并直接执行，有()
     func(args){
         ...CODE...
     }(parameters)
@@ -383,7 +426,7 @@
    }
    ```
 
-2. 每个defer函数都相当于创建了一个独立的defer栈帧，所以defer是LIFO的；
+2. 每个defer函数都相当于创建了一个独立的defer栈帧，所以defer是LIFO的，逆序执行；
 
    ```go
    func main() {
@@ -516,7 +559,7 @@
    panic: panic in a
    ```
 
-2. 可以使用recover()去捕获panic()并恢复执行。recover()用于捕捉panic()错误，并返回这个错误信息。但注意，即使recover()捕获到了panic()，但调用含有panic()函数的函数(即上面的G()函数)也会退出，所以如果recover()定义在G()中，则G()中调用F()函数之后的代码都不会执行(见下面的通用格式)。
+2. 可以使用recover()去捕获panic()并恢复执行。recover()用于捕捉panic()错误，并返回这个错误信息。但注意，即使recover()捕获到了panic()，但调用含有panic()函数的函数(即上面的G()函数)也会退出，所以如果recover()定义在G()中，则G()中调用F()函数之后的代码都不会执行(见下面的通用格式)，所以recover在G中应该放到F的前面。
 
    ```go
    package main
@@ -595,7 +638,7 @@
    	return x - y
    }
    func main() {
-   	fmt.Println(testCallback(4, 5, add))
+   	fmt.Println(testCallback(4, 5, add))//这里调用的时候，直接写入函数名就行了。
    	fmt.Println(testCallback(4, 5, minus))
    }
    //输出：
@@ -603,7 +646,7 @@
    -1
    ```
 
-4. **闭包**：将函数B作为另一个函数A的返回值。作用是"一个函数+一个作用域环境"组成的特殊函数，使得函数B可以访问不是它自己内部的变量，可以访问函数A中的变量。
+4. **闭包**：将函数B作为另一个函数A的返回值。作用是"一个函数+一个作用域环境"组成的特殊函数，使得函数B可以访问不是它自己内部的变量，可以访问并持有函数A中的局部变量。
 
    ```go
    package main
@@ -633,7 +676,7 @@
    }
    //上面的f()返回的g之所以称为闭包函数，是因为它是一个函数，且引用了不在它自己范围内的变量x，这个变量x是g所在作用域环境内的变量，
    //因为x是未知、未赋值的自由变量。如果x在传递给g之前是已经赋值的，那么闭包函数就不应该称为闭包，因为这样的闭包已经失去意义了。
-   //闭包的作用很明显，在f(3)退出后，它返回的闭包函数g()仍然记住了原本属于f()中的`x=3`。这样就可以让**很多闭包函数共享同一个自由变量x的值**。但是下面的f(3)(5)属于匿名闭包，两个匿名闭包中的x=3是相互独立的。
+   //闭包的作用很明显，在f(3)退出后，它返回的闭包函数g()仍然记住了原本属于f()中的`x=3`。这样就可以让很多闭包函数共享同一个自由变量x的值。但是下面的f(3)(5)属于匿名闭包，两个匿名闭包中的x=3是相互独立的。
    ```
 
    ```go
@@ -681,19 +724,19 @@
    p.age = 23
    //2、实例化并赋值：必须要用 ， 分割
    var p person = person{name:"longshuai",age:23}
-   p := person{"longshuai",23}
-   //3、new()函数：只能实例化，之后再赋值
+   p := person{"longshuai",23}//属性全写时，不用写字段名字
+   //3、new()函数：只能实例化，之后再赋值，这个时候p是指针类型
    p := new(person)
    p.name = "longshuai"
    p.age = 23
-   //4、&TYPE{}：可以实例化并赋值
+   //4、&TYPE{}：可以实例化并赋值，这个时候p是指针类型
    p := &person{}
    p.name = "longshuai"
    p.age = 23
    	//实例化并赋值
    p := &person{
        name:"longshuai",
-       age:23,
+       age:23,//注意这里的逗号不能省略
    }
    ```
 
@@ -715,7 +758,7 @@
    	fmt.Println(p1)
    	fmt.Println(p2)
    	fmt.Println(p3)
-       //访问属性的方法都是一样的p1.name,p2.name,p3.name
+       //访问属性的方法都是一样的 p1.name,p2.name,p3.name
    }
    //输出
    { 0}
@@ -883,9 +926,9 @@
 
     - 但是需要注意方法的首字母大小写问题和是否同一个包的问题。
 
-      - 由于内、外struct在同一包内，所以直接在该**包内**构建外部struct实例，外部struct实例是可以直接访问内部struct的所有方法的。
+      - 如果内、外struct在同一包内，直接在该**包内**构建外部struct**实例**，外部struct实例是可以直接访问内部struct的所有方法的。
 
-      - 但如果在**其它包内**构建外部struct实例，该实例将无法访问内部struct中首字母小写的方法。
+      - 但如果在**其它包内**构建外部struct实例，该**实例**将无法访问内部struct中首字母小写的方法。
 
         ```go
         package abc
@@ -983,7 +1026,7 @@
      }
      ```
 
-   - struct结合它的方法就等价于面向对象中的类。只不过struct可以和它的方法分开，并非一定要属于同一个文件，但必须属于同一个包。所以，没有办法直接在int、float等内置的简单类型上定义方法，真要为它们定义方法，可以像上面示例中一样使用type定义这些类型的别名，然后定义别名的方法。
+   - struct结合它的方法就等价于面向对象中的类。只不过struct可以和它的方法分开，**并非一定要属于同一个文件，但必须属于同一个包**。所以，没有办法直接在int、float等内置的简单类型上定义方法，真要为它们定义方法，可以像上面示例中一样使用type定义这些类型的别名，然后定义别名的方法。
 
    - 方法就是函数，所以Go中没有方法重载(overload)的说法，也就是说同一个类型中的所有方法名必须都唯一。但不同类型中的方法，可以重名。
 
@@ -1140,7 +1183,7 @@
 
 #### 十一、**接口**；
 
-1. 是一种类型，用来定义行为（方法）。也是一个指针。
+1. 是一种类型，用来定义行为（方法），也是一个指针。
 
    ```go
    type Namer interface {
@@ -1151,17 +1194,19 @@
    }
    ```
 
-2. 接口实际上是指针：当接口实例中保存了自定义类型的实例后，就可以直接从接口上调用它所保存的实例的方法。
+2. 接口实际上是指针：当接口实例中保存了自定义类型的实例后，就可以直接从接口上调用它所保存的实例的方法，通过这种形式实现多态。
 
 3. 接口实例中存什么：接口类型的数据结构是2个指针，占用2个机器字长。
 
-   - ​	第二个指针指向实例对象地址；
-   - 第一个指针是指向一个内部表结构iTable，iTable分为两部分：
+   - 第二个指针指向实例对象地址；
+   - 第一个指针是指向一个内部表结构**iTable**，iTable分为两部分：
      - 第一部分是实例对象c的类型信息：值或者指针
-     - 第二部分是方法集，实例类型为T（值类型）的，方法集中只有receiver为T的方法；实例类型为*T的，方法集中有receiver为*T的方法；
-   - ![image-20200704231335183](C:\Users\lkm\AppData\Roaming\Typora\typora-user-images\image-20200704231335183.png)
-
-   - ![image-20200704231354577](C:\Users\lkm\AppData\Roaming\Typora\typora-user-images\image-20200704231354577.png)
+     
+     - 第二部分是方法集，实例类型为T（值类型）的，方法集中只有receiver为T的方法；实例类型为\*T(指针类型)的，方法集中有receiver为\*T和T的方法；
+     
+       <img src="/Users/liukemeng/Documents/文件/Go笔记/figure/WechatIMG33.png" alt="WechatIMG33" style="zoom:50%;" />
+     
+     <img src="/Users/liukemeng/Documents/文件/Go笔记/figure/WechatIMG32.png" alt="WechatIMG32" style="zoom:50%;" />
 
 4. 从receiver角度考虑：
 
@@ -1169,7 +1214,7 @@
 
    - **如果某类型实现接口的方法的receiver是`(T *Type)`类型的，那么只有指针类型的实例`*T`才算是实现了这个接口，只有指针类型的实例才能调用这个方法**。因为这个方法不在值类型的实例`T`方法集中。
 
-     ![image-20200704232317572](C:\Users\lkm\AppData\Roaming\Typora\typora-user-images\image-20200704232317572.png)
+     ![WechatIMG31](/Users/liukemeng/Documents/文件/Go笔记/figure/WechatIMG31.png)
 
      ```go
      package main
@@ -1207,7 +1252,7 @@
      	ins2 = c2
      	fmt.Println(ins2.Area())
      }
-     //如果上面Area方法的receiver为指针类型的话，c1和c2赋值给接口实例后，都可以调用。
+     //如果上面Area方法的receiver为值类型的话，c1和c2赋值给接口实例后，都可以调用。
      ```
 
 5. **普通方法和实现接口方法的区别**：实现接口的方法按照上面的思路进行调用。
@@ -1226,7 +1271,7 @@
      - 只不过，p1.method1()和p2.method1()都是拷贝实例；然后p2.method1()自动解除引用，相当于(*p2).method2()。
      - p1.method2()和p2.method2()都是拷贝引用；然后p1.method2()自动创建引用，相当于(&p1).method2()。
 
-6. **接口类型作为参数（其实同4）**：
+6. **接口类型作为参数（其实同4）**：本质也是将结构体实例复制给接口实例。
 
    ```go
    package main
@@ -1330,9 +1375,15 @@
        
        // 拷贝成功
        var any []interface{}
-   for _,value := range testSlice{
-   	any = append(any,value)
-   }
+   		for _,value := range testSlice{
+   				any = append(any,value)
+   		}
+     	
+     	//成功拷贝
+     var any interface{}
+     any=testSlice     //这个时候any类型就是[]int了
+     fmt.Println(any)
+     
    }
    //这是因为每个空接口的内存布局都占用两个机器字长的内容。对于长度为N的空接口slice来说，它的每个元素都是以2机器字长为单元的连续空间，共占用N*2个机器字长的空间。
    //而普通的slice，例如上面的testSlice，它的每个元素是int类型的，int类型的内存布局和空接口不一样。
@@ -1403,7 +1454,7 @@
 
       
 
-    - 注意，接口实例转回时，**接口实例中存放的是什么类型，才能转换成什么类型**。receiver是值类型的话，可以对值类型和指针类型的实例进行转换；receiver是指针类型的话，只可以对指针类型的实例进行转换。（跟上面的4一样）
+    - 注意，接口实例转回时，**接口实例中存放的是什么类型，才能转换成什么类型**。receiver是值类型的话，可以对值类型和指针类型的实例进行转换；receiver是指针类型的话，只可以对指针类型的实例进行转换。（跟上面的4一样，这是因为结构体实例先转为接口实例，之后才是接口实例转为结构体实例）
 
     - 类型探测的方式和类型转换的方式都是`ins.(Type)`和`ins.(*Type)`。当处于单个返回值上下文时，做的是类型转换，当处于两个返回值的上下文时，做的是类型探测。类型探测的第一个返回值是类型转换之后的类型实例，第二个返回值是布尔型的ok返回值。
 
@@ -1533,39 +1584,43 @@
 
 #### 十三、channel基础；
 
-1. **channel用于goroutines之间的通信，让它们之间可以进行数据交换。**channel是指针类型的数据类型，通过make来分配内存。
+1. 底层实现：一个环形数组实现的队列，用于存储消息元素；两个链表实现的 goroutine 等待队列，用于存储阻塞在 recv 和 send 操作上的 goroutine；一个互斥锁，用于各个属性变动的同步。
+
+   <img src="/Users/liukemeng/Library/Application Support/typora-user-images/image-20200718181800154.png" alt="image-20200718181800154" style="zoom:50%;" />
+   
+2. **channel用于goroutines之间的通信，让它们之间可以进行数据交换。**channel是指针类型的数据类型，通过make来分配内存。
 
    ```go
    //创建通道
    ch := make(chan Type, cap int)
    ```
 
-2. **channel的三种操作**：
+3. **channel的三种操作**：
 
    - send：表示sender端的goroutine向channel中投放数据，channel满了，就阻塞；
    - receive：表示receiver端的goroutine从channel中读取数据，channel没有数据了，就阻塞；
-   - close：表示关闭channel
+   - close：表示关闭channel，关闭的时候会移除sendq和receiveq中的所有的goroutine，并唤醒他们。
      - 只在sender端上显式使用close()关闭channel，因为关闭通道意味着没有数据再需要发送；
-     - 关闭channel后，send操作将导致painc；
-     - 关闭channel后，recv操作将返回channel里面的剩余元素，没有剩余元素了，就返回对应类型的0值以及一个状态码false；
+     - 关闭channel后，send操作将导致painc，关闭一个已经关闭或者是只读channel或者空channel也会引发panic。
+     - 关闭channel后，recv操作将返回channel里面的剩余元素，没有剩余元素了，就返回对应类型的0值以及一个状态码false，（因为关闭通道也会成功读取通道里面的内容，所以可以使得原本阻塞的gorountine变得不阻塞）
      - close并非强制需要使用close(ch)来关闭channel，在某些时候可以自动被关闭；
      - 如果使用close()，建议条件允许的情况下加上defer；
      - 
 
-3. **channel的分类**：**unbuffered channel和buffered channel**
+4. **channel的分类**：**unbuffered channel和buffered channel**
 
    - **unbuffered channel**：阻塞、同步模式； ch:=make(chan type)，容量为0的buffered channel,发送一个数据就被阻塞。
-     - sender端向channel中send一个数据，然后阻塞，直到receiver端将此数据receive
-     - receiver端一直阻塞，直到sender端向channel发送了一个数据
+     - sender端向channel中send一个数据，如果接收协程队列不为空，直接移出第一个接收协程，然后把值直接传递给协程。如果接收协程队列为空，这个发送协程将被阻塞，被放倒channel的发送协程队列里面。
+     - receiver端从channel获取数据，如果发现发送队列不为空，唤醒发送队列的第一个协程，然后该发行协程将数据直接发送给接收协程。
    - **buffered channel**：非阻塞、异步模式；ch:=make(chan type, cap int)
-     - sender端可以向channel中send多个数据(只要channel容量未满)，容量满之前不会阻塞
-     - receiver端按照队列的方式(FIFO,先进先出)从buffered channel中按序receive其中数据
+     - sender端可以向channel中send多个数据(只要channel容量未满)，容量满之前不会阻塞，容量满了就阻塞，加入发送序列。
+     - receiver端按照队列的方式(FIFO,先进先出)从buffered channel中按序receive其中数据，如果有数据直接取出，没有的话接收协程阻塞，加入到协程的接收队列里面。
    - **unbuffered channel和buffered channel的区别**：
      - 对于unbuffered channel，sender发送一个数据，channel暂时不会向sender的请求返回ok消息，而是等到receiver准备接收channel数据了，channel才会向sender和receiver双方发送ok消息。在sender和receiver接收到ok消息之前，两者一直处于阻塞。
      - 对于buffered channel，sender每发送一个数据，只要channel容量未满，channel都会向sender的请求直接返回一个ok消息，使得sender不会阻塞，直到channel容量已满，channel不会向sender返回ok，于是sender被阻塞。对于receiver也一样，只要channel非空，receiver每次请求channel时，channel都会向其返回ok消息，直到channel为空，channel不会返回ok消息，receiver被阻塞。
      - 
 
-4. **两种特殊的channel**：nil channel和channel类型的channel。
+5. **两种特殊的channel**：nil channel和channel类型的channel。
 
    - 当未为channel分配内存时，channel就是nil channel，例如`var ch1 chan int`。nil channel会永远阻塞对该channel的读、写操作。
 
@@ -1590,22 +1645,22 @@
 
    - 
 
-5. **死锁**:
+6. **死锁**:
 
    - channel的某一端(sender/receiver)期待另一端的(receiver/sender)操作，另一端正好在期待本端的操作时，也就是说两端都因为对方而使得自己当前处于阻塞状态，这时将会出现死锁问题。更通俗地说，**只要所有goroutine都被阻塞，就会出现死锁**。
    - 
 
-6. **for range迭代channel**：
+7. **for range迭代channel**：
 
-   - 它会返回每次迭代过程中所读取的数据，直到channel被关闭。必须注意，只要channel未关闭，range迭代channel就会一直被阻塞。
+   - 它会返回每次迭代过程中所读取的数据，直到channel被关闭。必须注意，只要channel未关闭，range迭代channel就会一直被阻塞。不像array、slice、map，channel只会返回一个变量。但是<-ch会返回两个变量。
    - 也可以外层直接用for无限循环来迭代读取channel中的数据。
 
-7. **指定channel的方向**：
+8. **指定channel的方向**：
 
-   - `in <-chan int`：表示channel in通道只用于接收数据，用户从in中读取数据。
+   - `in <-chan int`：表示channel in通道只用于接收数据（站在goroutine的角度），用户从in中读取数据。
    - `out chan<- int`：表示channel out通道只用于发送数据，用户向out中发送数据。
 
-8. **buffered channel异步队列请求示例**：
+9. **buffered channel异步队列请求示例**：
 
    ```go
    package main
@@ -1666,14 +1721,16 @@
    }
    ```
 
-9. **select多路监听**:很多时候想要同时操作多个channel，比如从ch1、ch2读数据。Go提供了一个select语句块，它像switch一样工作，里面放一些case语句块，用来轮询每个case语句块的send或recv情况。
+10. **select多路监听**:很多时候想要同时操作多个channel，比如从ch1、ch2读数据。Go提供了一个select语句块，它像switch一样工作，里面放一些case语句块，用来轮询每个case语句块的send或recv情况。
 
    - 在一个select语句中，Go语言会按顺序从头至尾评估每一个发送和接收的语句。如果其中有多个case没有被阻塞，那么就从这些可以执行的语句中**随机选择**一条来执行。对于这一次的选择，其它的case都不会被阻塞，而是处理完被选中的case后进入下一轮select(如果select在循环中)或者结束select(如果select不在循环中或循环次数结束)
 
    - 如果没有case可以执行(即所有的通道都被阻塞)，那么有两种可能的情况：
 
-     -  如果给出了default语句，那么就会执行default语句，同时程序的执行会从select语句后的语句中恢复；
-     -  如果没有default语句，那么select语句将被阻塞，直到至少有一个通信可以进行下去；
+     - 如果给出了default语句，那么就会执行default语句，同时程序的执行会从select语句后的语句中恢复；
+
+     - 如果没有default语句，那么当前goroutine会阻塞，当前的goroutine会挂接到所有关联的channel内部的协程队列上。当一个阻塞的goroutine拿到了数据解除阻塞的时候，它会从所有相关的channel队列中移除掉。（ 所以说单个goroutine是可以同时挂接到多个channel上的，甚至可以同时挂接到同一个channel的发送协程队列和接收协程队列上）；
+
      - 
 
    - 注意：
@@ -1681,6 +1738,7 @@
      - 所有的case块都是按源代码书写顺序进行评估的。当select未在循环中时，它将只对所有case评估一次，这次结束后就结束select。某次评估过程中如果有满足条件的case，则所有其它case都直接结束评估，并退出此次select；
      - 其实如果注意到select语句是在某一个goroutine中评估的，就不难理解只有所有case都不满足条件时，select所在goroutine才会被阻塞，只要有一个case满足条件，本次select就不会出现阻塞的情况。
      - 一般来说，select会放在一个无限循环语句中，一直轮询channel的可读事件。
+     - 
 
      ```go
      package main
@@ -1692,7 +1750,7 @@
      func push1(ch chan int, wg *sync.WaitGroup){
      	for i:=0;i<30;i++{
      		if i%2==0 {
-     			ch <- i;
+     			ch <- i
      		}
      	}
      	wg.Done()
@@ -1701,7 +1759,7 @@
      func push2(ch chan int,wg *sync.WaitGroup){
      	for i:=0;i<30;i++{
      		if i%2==1 {
-     			ch <- i;
+     			ch <- i
      		}
      	}
      	wg.Done()
@@ -1732,9 +1790,507 @@
      }
      ```
 
+   - 你好
+
+     
+
+#### 十四、After()和TIck()方法；
+
+1. ​	time.After()的作用：在d时间之后的时间点放到一个只读通道里面，来保障在select是不会永久阻塞的。这个方法只等待了一次，定义如下：
+
+   ```go
+   func After(d Duration) <-chan Time
+   ```
+
+   - 实例代码：
+
+     ```go
+     func main() {
+     	ch1 := make(chan string)
+     
+     	// 激活一个goroutine，但5秒之后才发送数据
+     	go func() {
+     		time.Sleep(5 * time.Second)
+     		ch1 <- "put value into ch1"
+     	}()
+     
+     	select {
+     	case val := <-ch1:
+     		fmt.Println("recv value from ch1:",val)
+     		return
+     	// 只等待3秒，然后就结束
+     	case <-time.After(3 * time.Second):
+     		fmt.Println("3 second over, timeover")
+     	}
+     }
+     //输出： 
+     //3 second over, timeover
+     //main协程到select这个地方，select中没有可执行的case，main协程阻塞在两个通道上，因为上面那个协程等了5秒，随后3s后下面那个case可执行。
+     ```
+
+     
+
    - 
 
-#### 十四、；
+2. time.TIck()的作用：间隔的地多次等待，示例代码如下：
 
-#### 十五、；
+   ```go
+   package main
+   
+   import (
+   	"fmt"
+   	"time"
+   )
+   
+   func main() {
+   	tick := time.Tick(1 * time.Second)
+   	after := time.After(7 * time.Second)
+     
+   	fmt.Println("start second:",time.Now().Second())
+   	for {
+   		select {
+   		case <-tick:
+   			fmt.Println("1 second over:", time.Now().Second())
+   		case <-after:
+   			fmt.Println("7 second over:", time.Now().Second())
+   			return
+   		}
+   	}
+   }
+   /*
+   输出：
+   start second: 9
+   1 second over: 10
+   1 second over: 11
+   1 second over: 12
+   1 second over: 13
+   1 second over: 14
+   1 second over: 15
+   1 second over: 16
+   7 second over: 16
+   */
+   ```
+
+3. 
+
+4. 
+
+#### 十五、nil channel的用法示例；
+
+1. ​	当未为channel分配内存时，channel就是nil channel，nil channel会永久阻塞对该channel的所有读、写。所以，可以将某个channel设置为nil，进行强制阻塞，对于select分支来说，就是强制禁用此分支。
+
+   ```go
+   package main
+   
+   import (
+   	"fmt"
+   	"math/rand"
+   	"time"
+   )
+   
+   // 不断向channel c中发送[0,10)的随机数
+   func send(c chan int) {
+   	for {
+   		c <- rand.Intn(10)
+   	}
+   }
+   
+   func add(c chan int) {
+   	sum := 0
+   
+   	// 1秒后，将向t.C通道发送时间点，使其可读
+   	t := time.NewTimer(1 * time.Second)
+   
+   	for {
+   		// 一秒内，将一直选择第一个case
+   		// 一秒后，t.C可读，将选择第二个case
+   		// c变成nil channel后，两个case分支都将一直阻塞
+   		select {
+   		case input := <-c:
+   			// 不断读取c中的随机数据进行加总
+   			sum = sum + input
+   		case <-t.C:
+   			c = nil
+   			fmt.Println(sum)
+   		}
+   	}
+   }
+   
+   func main() {
+   	c := make(chan int)
+   	go add(c)
+   	go send(c)
+   	// 给3秒时间让前两个goroutine有足够时间运行
+   	time.Sleep(3 * time.Second)
+   }
+   ```
+
+   
+
+2. 
+
+#### 十六、互斥锁和读写锁；
+
+​	注意：读写锁与互斥锁不会和goroutine进行关联，所以锁的申请和释放可以在不同的goroutine中。
+
+1. 互斥锁：sync.Mutex中的Lock()和Unlock()方法实现对临界区（critical section）的加锁和解锁，保障同一时间只有一个goroutine进入到临界区，但是无法保障顺序。
+
+   ```go
+   package main
+   
+   import (
+   	"fmt"
+   	"sync"
+   	"time"
+   )
+   
+   // 共享变量
+   var (
+   	m  sync.Mutex
+   	v1 int
+   )
+   
+   // 修改共享变量
+   // 在Lock()和Unlock()之间的代码部分是临界区
+   func change(i int) {
+   	m.Lock()
+   	time.Sleep(time.Second)
+   	v1 = i
+   	m.Unlock()
+   }
+   
+   // 访问共享变量
+   // 在Lock()和Unlock()之间的代码部分是是临界区
+   func read() int {
+   	m.Lock()
+   	a := v1
+   	m.Unlock()
+   	return a
+   }
+   
+   func main() {
+   	var numGR = 21
+   	var wg sync.WaitGroup
+   
+   	fmt.Printf("%d", read())
+   
+   	// 循环创建numGR个goroutine
+   	// 每个goroutine都执行change()、read()
+   	// 每个change()和read()都会持有锁
+   	for i := 0; i < numGR; i++ {
+   		wg.Add(1)
+   		go func(i int) {
+   			defer wg.Done()
+   			change(i)
+   			fmt.Printf(" -> %d", read())
+   		}(i)
+   	}
+   
+   	wg.Wait()
+   }
+   //输出：0 -> 3 -> 20 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 -> 10 -> 11 -> 12 -> 13 -> 14 -> 15 -> 16 -> 17 -> 18 -> 2 -> 0 -> 19 -> 1
+   //有两个0，可以保障只有一个协程在读或者写，但是不能保障读写的原子性。
+   ```
+
+2. 适合sync.Mutex的数据类型
+
+   - 对于内置类型的共享变量来说，使用sync.Mutex和Lock()、Unlock()来保护也是不合理的，因为它们自身不包含Mutex属性。真正合理的共享变量是那些包含Mutex属性的struct类型。例如：
+
+     ```go
+     type mytype struct {
+     	m   sync.Mutex
+     	var int
+     }
+     
+     x := new(mytype)
+     //这时只要想保护var变量，就先x.m.Lock()，操作完var后，再x.m.Unlock()。这样就能保证x中的var字段变量一定是被保护的。
+     ```
+
+     
+
+   - 
+
+3. 读写锁：sync.RWMutex是基于Mutex加上了读写的信号量，底层结构是：
+
+   ```go
+   type RWMutex struct {
+   	w           Mutex  // held if there are pending writers
+   	writerSem   uint32 // 写锁需要等待读锁释放的信号量
+   	readerSem   uint32 // 读锁需要等待写锁释放的信号量
+   	readerCount int32  // 读锁后面挂起了多少个写锁申请
+   	readerWait  int32  // 已释放了多少个读锁
+   }
+   ```
+
+   - 读锁和读锁是兼容的；读锁和写锁互斥；写锁和写锁、读锁都互斥。而且
+
+   - 所以：有读锁可以再申请读锁，不能申请写锁；有写锁不能申请写锁、读锁。
+
+     ```go
+     func (rw *RWMutex) Lock()     //申请写锁
+     func (rw *RWMutex) Unlock()   //释放写锁
+     func (rw *RWMutex) RLock()    //申请读锁
+     func (rw *RWMutex) RUnlock()  //释放读锁
+     func (rw *RWMutex) RLocker() Locker   //返回一个实现了Lock()和Unlock()方法的Locker接口
+     ```
+
+   - 示例代码
+
+     ```go
+     package main
+     
+     import (
+     	"fmt"
+     	"sync"
+     )
+     
+     type person struct{
+     	age int
+     	m sync.Mutex
+     	rwm sync.RWMutex
+     }
+     func(p *person) changeWithMutex(age int,wg *sync.WaitGroup){
+     	defer wg.Done()
+     	p.m.Lock()
+     	fmt.Printf("%s\n","写   Mutex")
+     	p.age=age
+     	fmt.Printf("%s\n","写完  Mutex")
+     	p.m.Unlock()
+     }
+     func(p *person) readWithMutex(wg *sync.WaitGroup){
+     	defer wg.Done()
+     	p.m.Lock()
+     	fmt.Printf("%s\n","读   Mutex")
+     	fmt.Printf("%d\n",p.age)
+     	fmt.Printf("%s\n","读完 Mutex")
+     	p.m.Unlock()
+     }
+     //-----------------
+     func(p *person) changeWithRWMutex(age int,wg *sync.WaitGroup){
+     	defer wg.Done()
+     	p.rwm.Lock()
+     	fmt.Printf("%s\n","写   RWMutex")
+     	p.age=age
+     	fmt.Printf("%s\n","写完  RWMutex")
+     	p.rwm.Unlock()
+     }
+     func(p *person) readWithRWMutex(wg *sync.WaitGroup){
+     	defer wg.Done()
+     	p.rwm.RLock()
+     	fmt.Printf("%s\n","读   RWMutex")
+     	fmt.Printf("%d\n",p.age)
+     	fmt.Printf("%s\n","读完 RWMutex")
+     	p.rwm.RUnlock()
+     }
+     func main(){
+     	var mm sync.Mutex
+     	var rwmm sync.RWMutex
+     	var wg sync.WaitGroup
+     	p:=person{20,mm,rwmm}
+     	for i:=0;i<5;i++{
+     		wg.Add(2)
+     		go p.changeWithMutex(i,&wg)
+     		//go p.readWithMutex(&wg)
+     		go p.changeWithRWMutex(i,&wg)
+     		//go p.readWithRWMutex(&wg)
+     	}
+     	wg.Wait()
+     
+     }
+     ```
+
+     **总结**：**sync.Mutex和sync.RWMutex是互补干扰的，各走各的。**
+
+4. 
+
+#### 十七、工作池；
+
+1. 工作池的简介
+
+   - 在线程池模型中，**有2个队列一个池子：任务队列、已完成任务队列和线程池**。其中已完成任务队列可能存在也可能不存在，依据实际需求而定。只要有任务进来，就会放进任务队列中。只要线程执行完了一个任务，就将任务放进已完成任务队列，有时候还会将任务的处理结果也放进已完成队列中。
+
+     <img src="/Users/liukemeng/Library/Application Support/typora-user-images/image-20200718213948361.png" alt="image-20200718213948361" style="zoom:50%;" />
+
+     
+
+   - 线程池的两种实现方式：传统的互斥锁、channel
+
+2. **传统互斥锁机制的线程池**：
+
+   ```go
+   //任务定义
+   type Task struct {
+   	...
+   }
+   //任务队列
+   type Queue struct{
+   	M     sync.Mutex  //最关键的锁，保障同一个时间点只有一个协程取得任务并更新任务列表
+   	Tasks []Task
+   }
+   
+   //执行任务的函数上面加上锁
+   func Worker(queue *Queue) {
+   	for {
+   		// Lock()和Unlock()之间的是critical section
+   		queue.M.Lock()
+   		// 取出任务
+   		task := queue.Tasks[0]
+   		// 更新任务队列
+   		queue.Tasks = queue.Tasks[1:]
+   		queue.M.Unlock()
+   		// 在此goroutine中执行任务
+   		process(task)
+   	}
+   }
+   //外层就是通过线程池激活n各goroutine来执行Worker方法。Lock()和Unlock()保证了在同一时间点只能有一个goroutine取得任务并随之更新任务列表，取任务和更新任务队列都是critical section中的代码，它们是具有原子性。然后这个goroutine可以执行自己取得的任务。于此同时，其它goroutine可以争夺互斥锁，只要争抢到互斥锁，就可以取得任务并更新任务列表。当某个goroutine执行完process(task)，它将因为for循环再次参与互斥锁的争抢。
+   ```
+
+3. **通过buffered channel实现线程池**：
+
+   ```go
+   package main
+   
+   import (
+   	"fmt"
+   	"math/rand"
+   	"sync"
+   	"time"
+   )
+   //任务
+   type Task struct {
+   	id      int
+   	randnum int
+   }
+   //结果
+   type Result struct {
+   	task   Task
+   	result int
+   }
+   //任务通道、结果通道   容量都是10
+   var tasks = make(chan Task, 10)
+   var results = make(chan Result, 10)
+   
+   //处理过程，就是算各个位的和  234  2+3+4=9
+   func process(num int) int {
+   	sum := 0
+   	for num != 0 {
+   		digit := num % 10
+   		sum += digit
+   		num /= 10
+   	}
+   	time.Sleep(2 * time.Second)
+   	return sum
+   }
+   
+   //worker,就是在外层要goroutine的函数，就是协程的主体，它调用了process
+   func worker(wg *sync.WaitGroup) {
+   	defer wg.Done()
+   	for task := range tasks {
+   		result := Result{task, process(task.randnum)}
+   		results <- result
+   	}
+   }
+   
+   //创建线程池
+   func createWorkerPool(numOfWorkers int) {
+   	var wg sync.WaitGroup
+   	for i := 0; i < numOfWorkers; i++ {
+   		wg.Add(1)
+   		go worker(&wg)
+   	}
+   	wg.Wait()
+   	close(results)
+   }
+   
+   //创建任务并添加到任务队列（通道）
+   func allocate(numOfTasks int) {
+   	for i := 0; i < numOfTasks; i++ {
+   		randnum := rand.Intn(999)
+   		task := Task{i, randnum}
+   		tasks <- task
+   	}
+   	close(tasks)  //任务添加完成后，关闭了任务通道，这样就激活了下面getResult中的阻塞在range上的协程，然后向done里面放了信号量 true。然后main函数可以知道此时任务取完了。
+   }
+   
+   //从结果队列（通道）里面取得结果
+   func getResult(done chan bool) {
+   	for result := range results {
+   		fmt.Printf("Task id %d, randnum %d , sum %d\n", result.task.id, result.task.randnum, result.result)
+   	}
+   	done <- true
+   }
+   
+   //主函数
+   func main() {
+   	startTime := time.Now()
+   	numOfWorkers := 20
+   	numOfTasks := 100
+   
+   	var done = make(chan bool)
+   	go getResult(done)
+   	go allocate(numOfTasks)
+   	go createWorkerPool(numOfWorkers)
+   	// 必须在allocate()和getResult()之后创建工作池
+   	<-done
+   	endTime := time.Now()
+   	diff := endTime.Sub(startTime)
+   	fmt.Println("total time taken ", diff.Seconds(), "seconds")
+   }
+   ```
+
+   
+
+4. 
+
+#### 十八、；
+
+#### 十九、；
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
