@@ -1204,17 +1204,18 @@ Go算法笔记
      
      - 第二部分是方法集，实例类型为T（值类型）的，方法集中只有receiver为T的方法；实例类型为\*T(指针类型)的，方法集中有receiver为\*T和T的方法；
      
-       <img src="/Users/liukemeng/Documents/文件/Go笔记/figure/WechatIMG33.png" alt="WechatIMG33" style="zoom:50%;" />
+     ![image](https://github.com/Liukemeng/Golang-Learning/blob/master/figures/WechatIMG33.png)
      
-     <img src="/Users/liukemeng/Documents/文件/Go笔记/figure/WechatIMG32.png" alt="WechatIMG32" style="zoom:50%;" />
+     ![image](https://github.com/Liukemeng/Golang-Learning/blob/master/figures/WechatIMG32.png)
 
 4. 从receiver角度考虑：
 
    - **如果某类型实现接口的方法的receiver是`(T Type)`类型的，那么值类型的实例`T`和指针类型的实例`*T`都算实现了这个接口，都可以通过接口实例调用这个方法**。因为这个方法既在值类型的实例`T`方法集中，也在指针类型的实例`*T`方法集中
 
    - **如果某类型实现接口的方法的receiver是`(T *Type)`类型的，那么只有指针类型的实例`*T`才算是实现了这个接口，只有指针类型的实例才能调用这个方法**。因为这个方法不在值类型的实例`T`方法集中。
-
-     ![WechatIMG31](/Users/liukemeng/Documents/文件/Go笔记/figure/WechatIMG31.png)
+     
+     ![image](https://github.com/Liukemeng/Golang-Learning/blob/master/figures/WechatIMG31.png)
+     
 
      ```go
      package main
